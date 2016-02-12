@@ -122,7 +122,8 @@ public class PeekView: UIView {
         
         // Add arrow image
         arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: CGRectGetMinY(contentView!.frame) - 25, width: 36, height: 11))
-        arrowImageView.image = UIImage(named: "arrow")
+        let bundle = NSBundle(forClass: self.classForCoder)
+        arrowImageView.image = UIImage(named: "arrow", inBundle: bundle, compatibleWithTraitCollection: nil)
         self.addSubview(arrowImageView)
         
         // Add gesture
@@ -163,7 +164,7 @@ public class PeekView: UIView {
                 if style == .Destructive {
                     button.setTitleColor(UIColor.redColor(), forState: .Normal)
                 } else if style == .Selected {
-                    let imageView = UIImageView(image: UIImage(named: "checked"))
+                    let imageView = UIImageView(image: UIImage(named: "checked", inBundle: bundle, compatibleWithTraitCollection: nil))
                     imageView.frame = CGRect(x: CGRectGetWidth(subviewFrame) - 30, y: buttonHeight/2 - 6, width: 15, height: 12)
                     imageView.tag = tickImageViewTag
                     imageView.alpha = 0
