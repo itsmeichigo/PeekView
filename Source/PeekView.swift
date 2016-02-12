@@ -105,6 +105,9 @@ public class PeekView: UIView {
         contentView!.alpha = 0
         self.addSubview(contentView!)
         
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissView")
+        self.addGestureRecognizer(tapGestureRecognizer)
+        
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "contentViewPanned:")
         contentView!.addGestureRecognizer(panGestureRecognizer)
         

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="jNg-zF-doy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="jNg-zF-doy">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
     </dependencies>
     <scenes>
         <!--Peek View Demo-->
@@ -122,7 +122,58 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eWG-pI-oG7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1902" y="1034"/>
+            <point key="canvasLocation" x="1978" y="1034"/>
+        </scene>
+        <!--Detail View Controller-->
+        <scene sceneID="wka-nL-rMk">
+            <objects>
+                <viewController storyboardIdentifier="miniDetailController" autoresizesArchivedViewToFullSize="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Ujq-oq-VvB" customClass="DetailViewController" customModule="PeekViewDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="msj-xf-wPi"/>
+                        <viewControllerLayoutGuide type="bottom" id="nzW-9X-dRU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="9iO-8y-FC1">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="378"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="L6t-kr-RG5">
+                                <rect key="frame" x="0.0" y="108" width="600" height="286"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="286" id="7K8-Db-Yhf"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xEX-70-xfu">
+                                <rect key="frame" x="10" y="78" width="263" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="263" id="gea-g7-Xv1"/>
+                                    <constraint firstAttribute="height" constant="21" id="tXz-fO-Hb7"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="xEX-70-xfu" firstAttribute="top" secondItem="msj-xf-wPi" secondAttribute="bottom" constant="14" id="50w-Yw-TUL"/>
+                            <constraint firstItem="L6t-kr-RG5" firstAttribute="leading" secondItem="9iO-8y-FC1" secondAttribute="leading" id="HLd-6P-fmM"/>
+                            <constraint firstItem="L6t-kr-RG5" firstAttribute="top" secondItem="msj-xf-wPi" secondAttribute="bottom" constant="44" id="JLR-63-jvW"/>
+                            <constraint firstAttribute="trailing" secondItem="L6t-kr-RG5" secondAttribute="trailing" id="KVd-1p-yg1"/>
+                            <constraint firstItem="xEX-70-xfu" firstAttribute="leading" secondItem="9iO-8y-FC1" secondAttribute="leading" constant="10" id="f2h-le-VsG"/>
+                        </constraints>
+                    </view>
+                    <value key="contentSizeForViewInPopover" type="size" width="600" height="378"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="378"/>
+                    <connections>
+                        <outlet property="detailImageView" destination="L6t-kr-RG5" id="Vdc-K6-Tkt"/>
+                        <outlet property="titleLabel" destination="xEX-70-xfu" id="tlb-8q-jxs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OqR-MK-mbz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1978" y="1842"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="1DN-1q-XIk">

@@ -50,13 +50,14 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
         guard #available(iOS 9.0, *) else {
             return nil
         }
-        let indexPath = collectionView.indexPathForItemAtPoint(location)
+        
+        let indexPath = collectionView.indexPathForItemAtPoint(collectionView.convertPoint(location, fromView:view))
         if let indexPath = indexPath {
             let imageName = imageNames[indexPath.item]
             if let cell = collectionView.cellForItemAtIndexPath(indexPath) {
                 previewingContext.sourceRect = cell.frame
                 
-                let controller = storyboard?.instantiateViewControllerWithIdentifier("detailController") as! DetailViewController
+                let controller = storyboard?.instantiateViewControllerWithIdentifier("miniDetailController") as! DetailViewController
                 controller.imageName = imageName
                 return controller
             }
@@ -66,7 +67,11 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func previewingContext(previewingContext: UIViewControllerPreviewing, commitViewController viewControllerToCommit: UIViewController) {
-        showDetailViewController(viewControllerToCommit, sender: self)
+        
+        let controller = storyboard?.instantiateViewControllerWithIdentifier("detailController") as! DetailViewController
+        controller.imageName = (viewControllerToCommit as! DetailViewController).imageName
+        
+        navigationController?.pushViewController(controller, animated: true)
     }
     
     // MARK - UICollectionViewDatasource
@@ -102,11 +107,11 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         if let cell = gestureRecognizer.view as? UICollectionViewCell, indexPath = collectionView.indexPathForCell(cell) {
             let imageName = imageNames[indexPath.item]
-            let controller = storyboard?.instantiateViewControllerWithIdentifier("detailController") as! DetailViewController
+            let controller = storyboard?.instantiateViewControllerWithIdentifier("miniDetailController") as! DetailViewController
             controller.imageName = imageName
             
             let frame = CGRect(x: 15, y: (screenHeight - 300)/2, width: screenWidth - 30, height: 300)
-            PeekView.viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: ["Option 1", "Option 2"], completionHandler: { optionIndex in
+            PeekView.viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: ["Option 1", "Option 2", "Option 3"], completionHandler: { optionIndex in
                     switch optionIndex {
                     case 0:
                         print("Option 1 selected")
