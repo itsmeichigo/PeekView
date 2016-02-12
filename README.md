@@ -33,7 +33,7 @@ Drag and drop folder named `Source` in your project and you're done.
 ### Usage
 
 - Add `UILongPressGestureRecognizer` to the view you want to peek (i.e table view cell, image, hypertext, etc.)
-- Create a `UIViewController` instance as the content of your peek view; then set your desire frame for the content view. It's recommended to leave a 15px padding for both left and right margin of your content view.
+- Create a `UIViewController` instance as the content of your peek view; then set your desired frame for the content view. It's recommended to leave a 15px padding for both left and right margin of your content view.
 - If you want to include preview actions, prepare an array containing title of the buttons and its preview style. Don't forget to prepare completion handlers for when each button is tapped.
 
 Sample snippet:
