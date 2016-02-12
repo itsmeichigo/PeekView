@@ -19,6 +19,8 @@ public class PeekView: UIView {
     var contentView: UIView?
     var buttonHolderView: UIView?
     var completionHandler: (Int -> Void)?
+    
+    var arrowImageView: UIImageView!
 
     public class func viewForController(
         parentViewController parentController: UIViewController,
@@ -105,6 +107,11 @@ public class PeekView: UIView {
         contentView!.alpha = 0
         self.addSubview(contentView!)
         
+        arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: CGRectGetMinY(contentView!.frame) - 25, width: 36, height: 11))
+        arrowImageView.image = UIImage(named: "arrow")
+        self.addSubview(arrowImageView)
+        
+        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissView")
         self.addGestureRecognizer(tapGestureRecognizer)
         
@@ -183,9 +190,13 @@ public class PeekView: UIView {
     
     func updateContentViewFrame(frameY: CGFloat) {
         if let contentView = contentView {
-            var centerPoint = contentView.center
-            centerPoint.y = frameY
-            contentView.center = centerPoint
+            var contentCenterPoint = contentView.center
+            contentCenterPoint.y = frameY
+            contentView.center = contentCenterPoint
+            
+            var arrowCenterPoint = arrowImageView.center
+            arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+            arrowImageView.center = arrowCenterPoint
             
             if let buttonHolderView = buttonHolderView {
                 if CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding*2 {
@@ -193,16 +204,21 @@ public class PeekView: UIView {
                     frame.origin.y = CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding
                     UIView.animateWithDuration(0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
+                        self.arrowImageView.alpha = 0
                     })
                 } else if CGRectGetMinY(buttonHolderView.frame) < CGRectGetMaxY(self.frame) && CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding {
                     var frame = buttonHolderView.frame
                     frame.origin.y = CGRectGetMaxY(contentView.frame) + buttonVerticalPadding
                     buttonHolderView.frame = frame
+                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                        self.arrowImageView.alpha = 0
+                    })
                 } else {
                     var frame = buttonHolderView.frame
                     frame.origin.y = CGRectGetMaxY(self.frame)
                     UIView.animateWithDuration(0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
+                        self.arrowImageView.alpha = 1
                     })
                     
                 }
