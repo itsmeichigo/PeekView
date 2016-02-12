@@ -1,5 +1,5 @@
 # PeekView
-[PeekView](#) supports peek, pop and preview actions for iOS devices without 3D Touch capibility
+When implementing peek, pop and preview actions with 3D Touch, you may want to support such features for users accessing your app from older devices that don't provide 3D Touch capibility. PeekView hence can be used as an alternative in such case.
 
 ![Preview](https://github.com/itsmeichigo/PeekView/blob/master/peekview.gif)
 
