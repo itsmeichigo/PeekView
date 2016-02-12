@@ -2,6 +2,7 @@
 [PeekView](#) supports peek, pop and preview actions for iOS devices without 3D Touch capibility
 
 ![Preview](https://github.com/itsmeichigo/PeekView/blob/master/peekview.gif)
+
 (Please ignore the low resolution of the GIF. Try the demo for actual experience.)
 
 ## Note
@@ -54,7 +55,7 @@ Sample snippet:
                 })
 ```
 
-Be sure to check out the demo code for better understanding of the usage
+Be sure to check out the demo code for better understanding of the usage.
 
 ### ARC
 
