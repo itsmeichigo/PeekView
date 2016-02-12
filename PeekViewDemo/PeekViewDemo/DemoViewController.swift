@@ -118,6 +118,8 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
                         print("Option 1 selected")
                     case 1:
                         print("Option 2 selected")
+                    case 2:
+                        print("Option 3 selected")
                     default:
                         break
                     }
