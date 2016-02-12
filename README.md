@@ -8,7 +8,7 @@ When implementing peek, pop and preview actions with 3D Touch, you may want to s
 
 ## Note
 
-Things that need approving
+Things that need improving
 - Content view panned: Smoother animation
 - Action style: Selected functionality
 - More customizable UI if needed (requests are welcome)
