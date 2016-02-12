@@ -22,6 +22,10 @@ Things that need approving
 
 #### Install using Cocoapods
 
+Just add the following line in to your pod file:
+  
+	pod 'PeekView'
+
 #### Manual Install
 
 Drag and drop folder named `Source` in your project and you're done.
