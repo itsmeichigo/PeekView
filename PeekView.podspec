@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
 
   s.source_files  = "Source"
 
+  s.resources = "Source/Assets/*.png"
   s.ios.resource_bundle = { 'PeekView' => 'Pod/Assets/*.png' }
 
 
