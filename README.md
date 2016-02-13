@@ -20,7 +20,7 @@ Things that need improving
 
 ## Getting Started
 
-#### Install using Cocoapods
+#### Install using CocoaPods
 
 Just add the following line in to your pod file:
   
