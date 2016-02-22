@@ -39,13 +39,17 @@ Drag and drop folder named `Source` in your project and you're done.
 Sample snippet:
 
 ```Swift
+  let options = [ 
+    PeekViewAction(title: "Option 1", style: .Destructive), 
+    PeekViewAction(title: "Option 2", style: .Default), 
+    PeekViewAction(title: "Option 3", style: .Selected) ]
   PeekView.viewForController(
   parentViewController: self, 
   contentViewController: controller, 
   expectedContentViewFrame: frame, 
   fromGesture: gestureRecognizer, 
   shouldHideStatusBar: true, 
-  withOptions: ["Option 1": .Destructive, "Option 2": .Default, "Option 3": .Selected], 
+  withOptions: options, 
   completionHandler: { optionIndex in
                     switch optionIndex {
                     case 0:
