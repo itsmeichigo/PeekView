@@ -20,6 +20,11 @@ public enum PeekViewActionStyle : Int {
     case Destructive
 }
 
+public struct PeekViewAction {
+    var title: String
+    var style: PeekViewActionStyle
+}
+
 public class PeekView: UIView {
     
     var shouldToggleHidingStatusBar = false
@@ -35,7 +40,7 @@ public class PeekView: UIView {
         expectedContentViewFrame frame: CGRect,
         fromGesture gesture: UILongPressGestureRecognizer,
         shouldHideStatusBar flag: Bool,
-        withOptions menuOptions: [String: PeekViewActionStyle]?=nil,
+        withOptions menuOptions: [PeekViewAction]?=nil,
         completionHandler handler: (Int -> Void)?=nil) {
         
             let window = UIApplication.sharedApplication().keyWindow!
@@ -88,7 +93,7 @@ public class PeekView: UIView {
             
     }
     
-    func configureView(viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [String: PeekViewActionStyle]?=nil, completionHandler: (Int -> Void)?=nil) {
+    func configureView(viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [PeekViewAction]?=nil, completionHandler: (Int -> Void)?=nil) {
         
         self.shouldToggleHidingStatusBar = shouldHideStatusBar
         self.completionHandler = completionHandler
@@ -149,21 +154,20 @@ public class PeekView: UIView {
             buttonHolderView!.layer.masksToBounds = true
             self.addSubview(buttonHolderView!)
             
-            for index in 0..<options.keys.count {
-                let key = Array(options.keys)[index]
-                let style = options[key]
+            for index in 0..<options.count {
+                let action = options[index]
                 let button = UIButton(type: .System)
                 button.frame = CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: CGRectGetWidth(subviewFrame), height: buttonHeight)
                 button.addTarget(self, action: "buttonPressed:", forControlEvents: .TouchUpInside)
                 button.tag = index
                 button.titleLabel?.font = UIFont.systemFontOfSize(18)
                 button.backgroundColor = UIColor.whiteColor()
-                button.setTitle(key, forState: .Normal)
+                button.setTitle(action.title, forState: .Normal)
                 buttonHolderView!.addSubview(button)
                 
-                if style == .Destructive {
+                if action.style == .Destructive {
                     button.setTitleColor(UIColor.redColor(), forState: .Normal)
-                } else if style == .Selected {
+                } else if action.style == .Selected {
                     let imageView = UIImageView(image: UIImage(named: "checked", inBundle: bundle, compatibleWithTraitCollection: nil))
                     imageView.frame = CGRect(x: CGRectGetWidth(subviewFrame) - 30, y: buttonHeight/2 - 6, width: 15, height: 12)
                     imageView.tag = tickImageViewTag

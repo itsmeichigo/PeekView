@@ -112,7 +112,12 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             // you can set different frame for each peek view here
             let frame = CGRect(x: 15, y: (screenHeight - 300)/2, width: screenWidth - 30, height: 300)
-            PeekView.viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: ["Option 1": .Destructive, "Option 2": .Default, "Option 3": .Selected], completionHandler: { optionIndex in
+            
+            let options = [
+                PeekViewAction(title: "Option 1", style: .Destructive),
+                PeekViewAction(title: "Option 2", style: .Default),
+                PeekViewAction(title: "Option 3", style: .Selected) ]
+            PeekView.viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: options, completionHandler: { optionIndex in
                     switch optionIndex {
                     case 0:
                         print("Option 1 selected")
