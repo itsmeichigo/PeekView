@@ -14,7 +14,7 @@ let peekViewTag = 1929
 let tickImageViewTag = 1930
 let buttonVerticalPadding = CGFloat(15)
 
-public enum PeekViewActionStyle : Int {
+@objc public enum PeekViewActionStyle : Int {
     case Default
     case Selected
     case Destructive
@@ -25,7 +25,7 @@ public struct PeekViewAction {
     var style: PeekViewActionStyle
 }
 
-public class PeekView: UIView {
+@objc public class PeekView: UIView {
     
     var shouldToggleHidingStatusBar = false
     var contentView: UIView?
@@ -33,7 +33,48 @@ public class PeekView: UIView {
     var completionHandler: (Int -> Void)?
     
     var arrowImageView: UIImageView!
-
+    
+    /**
+     *  Helper class function to support objective-c projects
+     *  Since struct cannot be bridged to obj-c, user can input an NSArray of NSDictionary objects,
+     *  whose key will be treated as option title and value is an NSNumber of PeekViewActionStyle.
+     *  (More delicate solution to be found later :[ )
+     */
+    @objc public class func viewForController(
+        parentViewController parentController: UIViewController,
+        contentViewController contentController: UIViewController,
+        expectedContentViewFrame frame: CGRect,
+        fromGesture gesture: UILongPressGestureRecognizer,
+        shouldHideStatusBar flag: Bool,
+        withOptions menuOptions: NSArray?=nil,
+        completionHandler handler: (Int -> Void)?=nil) {
+            
+            var options: [PeekViewAction]? = nil
+            if let menuOptions = menuOptions {
+                options = []
+                for option in menuOptions {
+                    if let dictionary = option as? NSDictionary,
+                        title = dictionary.allKeys[0] as? NSString,
+                        styleNumber = dictionary[title] as? NSNumber,
+                        style = PeekViewActionStyle(rawValue: styleNumber.integerValue) {
+                            options?.append(PeekViewAction(title: title as String, style: style))
+                    }
+                }
+            }
+            
+            PeekView.viewForController(
+                parentViewController: parentController,
+                contentViewController: contentController,
+                expectedContentViewFrame: frame,
+                fromGesture: gesture,
+                shouldHideStatusBar: flag,
+                withOptions: options,
+                completionHandler: handler)
+    }
+    
+    /**
+     *  
+     */
     public class func viewForController(
         parentViewController parentController: UIViewController,
         contentViewController contentController: UIViewController,
@@ -42,7 +83,7 @@ public class PeekView: UIView {
         shouldHideStatusBar flag: Bool,
         withOptions menuOptions: [PeekViewAction]?=nil,
         completionHandler handler: (Int -> Void)?=nil) {
-        
+            
             let window = UIApplication.sharedApplication().keyWindow!
             
             switch gesture.state {
@@ -79,8 +120,8 @@ public class PeekView: UIView {
                                 arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
                                 view.arrowImageView.center = arrowCenterPoint
                                 view.arrowImageView.alpha = 0
-                            }, completion: { completed in
-                                view.dismissView()
+                                }, completion: { completed in
+                                    view.dismissView()
                             })
                         }
                     } else {
@@ -181,7 +222,7 @@ public class PeekView: UIView {
                     buttonHolderView!.addSubview(separator)
                 }
             }
-           
+            
         }
     }
     
@@ -201,8 +242,8 @@ public class PeekView: UIView {
             UIView.animateWithDuration(0.2, animations: { () -> Void in
                 buttonHolderView.frame = buttonHolderViewFrame
                 contentView.frame = contentViewFrame
-            }, completion: { completed in
-                self.dismissView()
+                }, completion: { completed in
+                    self.dismissView()
             })
         } else {
             dismissView()
@@ -216,8 +257,8 @@ public class PeekView: UIView {
             }
             UIView.animateWithDuration(0.3, animations: { () -> Void in
                 contentView.alpha = 0
-            }, completion: { completion in
-                self.removeFromSuperview()
+                }, completion: { completion in
+                    self.removeFromSuperview()
             })
         }
     }
@@ -285,8 +326,8 @@ public class PeekView: UIView {
                         arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
                         self.arrowImageView.center = arrowCenterPoint
                         self.arrowImageView.alpha = 0
-                    }, completion: { completed in
-                        self.dismissView()
+                        }, completion: { completed in
+                            self.dismissView()
                     })
                 }
             } else {
@@ -297,5 +338,5 @@ public class PeekView: UIView {
         }
         
     }
-
+    
 }
