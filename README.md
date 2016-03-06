@@ -9,6 +9,8 @@ When implementing peek, pop and preview actions with 3D Touch, you may want to s
 ## Note
 
 Things that need improving
+- Better solution for Objective-C integration (the current is sort of hacky!)
+- Better documenting in code
 - Content view panned: Smoother animation
 - Action style: Selected functionality
 - More customizable UI if needed (requests are welcome)
@@ -65,6 +67,24 @@ Sample snippet:
 ```
 
 Be sure to check out the demo code for better understanding of the usage.
+
+As for Objective-C integration, a slightly different static function should be used, in which the `menuOptions` array is expected to be an `NSArray` of `NSDictionary`'s. Please check the snippet below:
+
+```Objc
+
+    NSArray *options = @[@{@"Option 1": @(PeekViewActionStyleDefault)},
+                         @{@"Option 2": @(PeekViewActionStyleDestructive)}];
+    
+    UIViewController *contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"previewVC"];
+    
+    [PeekView viewForControllerWithParentViewController:self
+                                  contentViewController:contentViewController
+                               expectedContentViewFrame:CGRectMake(0, 0, 280, 400)
+                                            fromGesture:gesture
+                                    shouldHideStatusBar:YES
+                                            withOptions:options
+                                      completionHandler:nil];
+```
 
 ### ARC
 
