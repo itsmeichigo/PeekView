@@ -32,7 +32,7 @@ public struct PeekViewAction {
     var buttonHolderView: UIView?
     var completionHandler: (Int -> Void)?
     
-    var arrowImageView: UIImageView!
+    var arrowImageView: UIImageView?
     
     /**
      *  Helper class function to support objective-c projects
@@ -46,8 +46,8 @@ public struct PeekViewAction {
         expectedContentViewFrame frame: CGRect,
         fromGesture gesture: UILongPressGestureRecognizer,
         shouldHideStatusBar flag: Bool,
-        withOptions menuOptions: NSArray?=nil,
-        completionHandler handler: (Int -> Void)?=nil) {
+        withOptions menuOptions: NSArray?,
+        completionHandler handler: (Int -> Void)?) {
             
             var options: [PeekViewAction]? = nil
             if let menuOptions = menuOptions {
@@ -62,7 +62,7 @@ public struct PeekViewAction {
                 }
             }
             
-            PeekView.viewForController(
+            PeekView().viewForController(
                 parentViewController: parentController,
                 contentViewController: contentController,
                 expectedContentViewFrame: frame,
@@ -75,7 +75,7 @@ public struct PeekViewAction {
     /**
      *  
      */
-    public class func viewForController(
+    public func viewForController(
         parentViewController parentController: UIViewController,
         contentViewController contentController: UIViewController,
         expectedContentViewFrame frame: CGRect,
@@ -116,12 +116,14 @@ public struct PeekViewAction {
                                 buttonHolderView.frame = frame
                                 contentView.center = CGPoint(x: CGRectGetWidth(view.frame)/2, y: CGRectGetHeight(view.frame)/2)
                                 // move arrow along with content view
-                                var arrowCenterPoint = view.arrowImageView.center
-                                arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
-                                view.arrowImageView.center = arrowCenterPoint
-                                view.arrowImageView.alpha = 0
-                                }, completion: { completed in
-                                    view.dismissView()
+                                if view.arrowImageView != nil {
+                                    var arrowCenterPoint = view.arrowImageView!.center
+                                    arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                                    view.arrowImageView!.center = arrowCenterPoint
+                                    view.arrowImageView!.alpha = 0
+                                }
+                            }, completion: { completed in
+                                view.dismissView()
                             })
                         }
                     } else {
@@ -166,17 +168,11 @@ public struct PeekViewAction {
         contentView!.alpha = 0
         self.addSubview(contentView!)
         
-        // Add arrow image
-        arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: CGRectGetMinY(contentView!.frame) - 25, width: 36, height: 11))
-        let bundle = NSBundle(forClass: self.classForCoder)
-        arrowImageView.image = UIImage(named: "arrow", inBundle: bundle, compatibleWithTraitCollection: nil)
-        self.addSubview(arrowImageView)
-        
         // Add gesture
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "dismissView")
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(PeekView.dismissView))
         self.addGestureRecognizer(tapGestureRecognizer)
         
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "contentViewPanned:")
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PeekView.contentViewPanned(_:)))
         contentView!.addGestureRecognizer(panGestureRecognizer)
         
         UIView.animateWithDuration(0.3, animations: { () -> Void in
@@ -185,6 +181,16 @@ public struct PeekViewAction {
         
         // If options are provided: configure buttons
         if let options = options {
+            
+            guard options.count > 0 else {
+                return
+            }
+            
+            // Add arrow image
+            arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: CGRectGetMinY(contentView!.frame) - 25, width: 36, height: 11))
+            let bundle = NSBundle(forClass: self.classForCoder)
+            arrowImageView!.image = UIImage(named: "arrow", inBundle: bundle, compatibleWithTraitCollection: nil)
+            self.addSubview(arrowImageView!)
             
             let cornerRadius = CGFloat(10)
             let buttonHeight = CGFloat(58)
@@ -199,7 +205,7 @@ public struct PeekViewAction {
                 let action = options[index]
                 let button = UIButton(type: .System)
                 button.frame = CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: CGRectGetWidth(subviewFrame), height: buttonHeight)
-                button.addTarget(self, action: "buttonPressed:", forControlEvents: .TouchUpInside)
+                button.addTarget(self, action: #selector(PeekView.buttonPressed(_:)), forControlEvents: .TouchUpInside)
                 button.tag = index
                 button.titleLabel?.font = UIFont.systemFontOfSize(18)
                 button.backgroundColor = UIColor.whiteColor()
@@ -270,9 +276,11 @@ public struct PeekViewAction {
             contentView.center = contentCenterPoint
             
             // move arrow along with content view
-            var arrowCenterPoint = arrowImageView.center
-            arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
-            arrowImageView.center = arrowCenterPoint
+            if arrowImageView != nil {
+                var arrowCenterPoint = arrowImageView!.center
+                arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                arrowImageView!.center = arrowCenterPoint
+            }
             
             if let buttonHolderView = buttonHolderView {
                 if CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding*2 {
@@ -281,7 +289,7 @@ public struct PeekViewAction {
                     frame.origin.y = CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding
                     UIView.animateWithDuration(0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
-                        self.arrowImageView.alpha = 0
+                        self.arrowImageView?.alpha = 0
                     })
                 } else if CGRectGetMinY(buttonHolderView.frame) < CGRectGetMaxY(self.frame) && CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding {
                     // if option buttons are visible partially
@@ -289,7 +297,7 @@ public struct PeekViewAction {
                     frame.origin.y = CGRectGetMaxY(contentView.frame) + buttonVerticalPadding
                     buttonHolderView.frame = frame
                     UIView.animateWithDuration(0.2, animations: { () -> Void in
-                        self.arrowImageView.alpha = 0
+                        self.arrowImageView?.alpha = 0
                     })
                 } else {
                     // hide option buttons
@@ -297,7 +305,7 @@ public struct PeekViewAction {
                     frame.origin.y = CGRectGetMaxY(self.frame)
                     UIView.animateWithDuration(0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
-                        self.arrowImageView.alpha = 1
+                        self.arrowImageView?.alpha = 1
                     })
                     
                 }
@@ -322,12 +330,15 @@ public struct PeekViewAction {
                         buttonHolderView.frame = frame
                         contentView.center = CGPoint(x: CGRectGetWidth(self.frame)/2, y: CGRectGetHeight(self.frame)/2)
                         // move arrow along with content view
-                        var arrowCenterPoint = self.arrowImageView.center
-                        arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
-                        self.arrowImageView.center = arrowCenterPoint
-                        self.arrowImageView.alpha = 0
-                        }, completion: { completed in
-                            self.dismissView()
+                        if self.arrowImageView != nil {
+                            var arrowCenterPoint = self.arrowImageView!.center
+                            arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                            self.arrowImageView!.center = arrowCenterPoint
+                            self.arrowImageView!.alpha = 0
+                        }
+                        
+                    }, completion: { completed in
+                        self.dismissView()
                     })
                 }
             } else {

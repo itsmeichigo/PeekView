@@ -45,7 +45,7 @@ Sample snippet:
     PeekViewAction(title: "Option 1", style: .Destructive), 
     PeekViewAction(title: "Option 2", style: .Default), 
     PeekViewAction(title: "Option 3", style: .Selected) ]
-  PeekView.viewForController(
+  PeekView().viewForController(
   parentViewController: self, 
   contentViewController: controller, 
   expectedContentViewFrame: frame, 

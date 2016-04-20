@@ -97,7 +97,7 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
     // MARK - UICollectionViewDelegate
     func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath) {
         if forceTouchAvailable == false {
-            let gesture = UILongPressGestureRecognizer(target: self, action: "longPressCell:")
+            let gesture = UILongPressGestureRecognizer(target: self, action: #selector(DemoViewController.longPressCell(_:)))
             gesture.minimumPressDuration = 0.5
             cell.addGestureRecognizer(gesture)
         }
@@ -117,7 +117,7 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
                 PeekViewAction(title: "Option 1", style: .Destructive),
                 PeekViewAction(title: "Option 2", style: .Default),
                 PeekViewAction(title: "Option 3", style: .Selected) ]
-            PeekView.viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: options, completionHandler: { optionIndex in
+            PeekView().viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: options, completionHandler: { optionIndex in
                     switch optionIndex {
                     case 0:
                         print("Option 1 selected")
