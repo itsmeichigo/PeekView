@@ -23,6 +23,11 @@ let buttonVerticalPadding = CGFloat(15)
 public struct PeekViewAction {
     var title: String
     var style: PeekViewActionStyle
+    
+    public init(title: String, style: PeekViewActionStyle){
+        self.title = title
+        self.style = style
+    }
 }
 
 @objc public class PeekView: UIView {
