@@ -8,16 +8,16 @@
 
 import UIKit
 
-let screenWidth = UIScreen.mainScreen().bounds.size.width
-let screenHeight = UIScreen.mainScreen().bounds.size.height
+let screenWidth = UIScreen.main.bounds.size.width
+let screenHeight = UIScreen.main.bounds.size.height
 let peekViewTag = 1929
 let tickImageViewTag = 1930
 let buttonVerticalPadding = CGFloat(15)
 
 @objc public enum PeekViewActionStyle : Int {
-    case Default
-    case Selected
-    case Destructive
+    case `default`
+    case selected
+    case destructive
 }
 
 public struct PeekViewAction {
@@ -30,12 +30,12 @@ public struct PeekViewAction {
     }
 }
 
-@objc public class PeekView: UIView {
+@objc open class PeekView: UIView {
     
     var shouldToggleHidingStatusBar = false
     var contentView: UIView?
     var buttonHolderView: UIView?
-    var completionHandler: (Int -> Void)?
+    var completionHandler: ((Int) -> Void)?
     
     var arrowImageView: UIImageView?
     
@@ -45,23 +45,23 @@ public struct PeekViewAction {
      *  whose key will be treated as option title and value is an NSNumber of PeekViewActionStyle.
      *  (More delicate solution to be found later :[ )
      */
-    @objc public class func viewForController(
+    @objc open class func viewForController(
         parentViewController parentController: UIViewController,
         contentViewController contentController: UIViewController,
         expectedContentViewFrame frame: CGRect,
         fromGesture gesture: UILongPressGestureRecognizer,
         shouldHideStatusBar flag: Bool,
         withOptions menuOptions: NSArray?,
-        completionHandler handler: (Int -> Void)?) {
+        completionHandler handler: ((Int) -> Void)?) {
             
             var options: [PeekViewAction]? = nil
             if let menuOptions = menuOptions {
                 options = []
                 for option in menuOptions {
                     if let dictionary = option as? NSDictionary,
-                        title = dictionary.allKeys[0] as? NSString,
-                        styleNumber = dictionary[title] as? NSNumber,
-                        style = PeekViewActionStyle(rawValue: styleNumber.integerValue) {
+                        let title = dictionary.allKeys[0] as? NSString,
+                        let styleNumber = dictionary[title] as? NSNumber,
+                        let style = PeekViewActionStyle(rawValue: styleNumber.intValue) {
                             options?.append(PeekViewAction(title: title as String, style: style))
                     }
                 }
@@ -80,50 +80,50 @@ public struct PeekViewAction {
     /**
      *  
      */
-    public func viewForController(
+    open func viewForController(
         parentViewController parentController: UIViewController,
         contentViewController contentController: UIViewController,
         expectedContentViewFrame frame: CGRect,
         fromGesture gesture: UILongPressGestureRecognizer,
         shouldHideStatusBar flag: Bool,
         withOptions menuOptions: [PeekViewAction]?=nil,
-        completionHandler handler: (Int -> Void)?=nil) {
+        completionHandler handler: ((Int) -> Void)?=nil) {
             
-            let window = UIApplication.sharedApplication().keyWindow!
+            let window = UIApplication.shared.keyWindow!
             
             switch gesture.state {
-            case .Began:
+            case .began:
                 let peekView = PeekView(frame: window.frame)
                 peekView.configureView(contentController, subviewFrame: frame, shouldHideStatusBar: flag, options: menuOptions, completionHandler: handler)
                 peekView.tag = peekViewTag
                 window.addSubview(peekView)
                 
                 parentController.addChildViewController(contentController)
-                contentController.didMoveToParentViewController(parentController)
+                contentController.didMove(toParentViewController: parentController)
                 
-            case .Changed:
+            case .changed:
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
-                    view.updateContentViewFrame(gesture.locationInView(view.superview!).y)
+                    view.updateContentViewFrame(gesture.location(in: view.superview!).y)
                 }
-            case .Ended:
+            case .ended:
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
-                    if let buttonHolderView = view.buttonHolderView, contentView = view.contentView {
-                        if CGRectGetMinY(buttonHolderView.frame) <= CGRectGetMaxY(view.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding {
+                    if let buttonHolderView = view.buttonHolderView, let contentView = view.contentView {
+                        if buttonHolderView.frame.minY <= view.frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding {
                             var frame = contentView.frame
-                            frame.origin.y = CGRectGetMinY(buttonHolderView.frame) - CGRectGetHeight(contentView.frame) - buttonVerticalPadding
-                            UIView.animateWithDuration(0.3, animations: { () -> Void in
+                            frame.origin.y = buttonHolderView.frame.minY - contentView.frame.height - buttonVerticalPadding
+                            UIView.animate(withDuration: 0.3, animations: { () -> Void in
                                 contentView.frame = frame
                             })
                         } else {
                             var frame = buttonHolderView.frame
-                            frame.origin.y = CGRectGetMaxY(view.frame)
-                            UIView.animateWithDuration(0.3, animations: { () -> Void in
+                            frame.origin.y = view.frame.maxY
+                            UIView.animate(withDuration: 0.3, animations: { () -> Void in
                                 buttonHolderView.frame = frame
-                                contentView.center = CGPoint(x: CGRectGetWidth(view.frame)/2, y: CGRectGetHeight(view.frame)/2)
+                                contentView.center = CGPoint(x: view.frame.width/2, y: view.frame.height/2)
                                 // move arrow along with content view
                                 if view.arrowImageView != nil {
                                     var arrowCenterPoint = view.arrowImageView!.center
-                                    arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                                    arrowCenterPoint.y = contentView.frame.minY - 17
                                     view.arrowImageView!.center = arrowCenterPoint
                                     view.arrowImageView!.alpha = 0
                                 }
@@ -141,25 +141,25 @@ public struct PeekViewAction {
             
     }
     
-    func configureView(viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [PeekViewAction]?=nil, completionHandler: (Int -> Void)?=nil) {
+    func configureView(_ viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [PeekViewAction]?=nil, completionHandler: ((Int) -> Void)?=nil) {
         
         self.shouldToggleHidingStatusBar = shouldHideStatusBar
         self.completionHandler = completionHandler
         
         if shouldToggleHidingStatusBar == true {
-            UIApplication.sharedApplication().statusBarHidden = true
+            UIApplication.shared.isStatusBarHidden = true
         }
         
         // Configure vibrancy
-        let blurEffect = UIBlurEffect(style: .Light)
+        let blurEffect = UIBlurEffect(style: .light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = self.bounds
         
-        let vibrancyEffect = UIVibrancyEffect(forBlurEffect: blurEffect)
+        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
         let vibrancyEffectView = UIVisualEffectView(effect: vibrancyEffect)
         vibrancyEffectView.frame = self.bounds
         let vibrancyContentView = UIView(frame: self.bounds)
-        vibrancyContentView.backgroundColor = UIColor.whiteColor()
+        vibrancyContentView.backgroundColor = UIColor.white
         vibrancyEffectView.contentView.addSubview(vibrancyContentView)
         blurEffectView.contentView.addSubview(vibrancyEffectView)
         
@@ -180,7 +180,7 @@ public struct PeekViewAction {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PeekView.contentViewPanned(_:)))
         contentView!.addGestureRecognizer(panGestureRecognizer)
         
-        UIView.animateWithDuration(0.3, animations: { () -> Void in
+        UIView.animate(withDuration: 0.3, animations: { () -> Void in
             self.contentView!.alpha = 1
         })
         
@@ -192,44 +192,44 @@ public struct PeekViewAction {
             }
             
             // Add arrow image
-            arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: CGRectGetMinY(contentView!.frame) - 25, width: 36, height: 11))
-            let bundle = NSBundle(forClass: self.classForCoder)
-            arrowImageView!.image = UIImage(named: "arrow", inBundle: bundle, compatibleWithTraitCollection: nil)
+            arrowImageView = UIImageView(frame: CGRect(x: screenWidth/2 - 18, y: contentView!.frame.minY - 25, width: 36, height: 11))
+            let bundle = Bundle(for: self.classForCoder)
+            arrowImageView!.image = UIImage(named: "arrow", in: bundle, compatibleWith: nil)
             self.addSubview(arrowImageView!)
             
             let cornerRadius = CGFloat(10)
             let buttonHeight = CGFloat(58)
             
-            buttonHolderView = UIView(frame: CGRect(x: CGRectGetMinX(subviewFrame), y: CGRectGetMaxY(self.frame), width: CGRectGetWidth(subviewFrame), height: buttonHeight*CGFloat(options.count)))
-            buttonHolderView!.layer.backgroundColor = UIColor.whiteColor().CGColor
+            buttonHolderView = UIView(frame: CGRect(x: subviewFrame.minX, y: self.frame.maxY, width: subviewFrame.width, height: buttonHeight*CGFloat(options.count)))
+            buttonHolderView!.layer.backgroundColor = UIColor.white.cgColor
             buttonHolderView!.layer.cornerRadius = cornerRadius
             buttonHolderView!.layer.masksToBounds = true
             self.addSubview(buttonHolderView!)
             
             for index in 0..<options.count {
                 let action = options[index]
-                let button = UIButton(type: .System)
-                button.frame = CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: CGRectGetWidth(subviewFrame), height: buttonHeight)
-                button.addTarget(self, action: #selector(PeekView.buttonPressed(_:)), forControlEvents: .TouchUpInside)
+                let button = UIButton(type: .system)
+                button.frame = CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: subviewFrame.width, height: buttonHeight)
+                button.addTarget(self, action: #selector(PeekView.buttonPressed(_:)), for: .touchUpInside)
                 button.tag = index
-                button.titleLabel?.font = UIFont.systemFontOfSize(18)
-                button.backgroundColor = UIColor.whiteColor()
-                button.setTitle(action.title, forState: .Normal)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+                button.backgroundColor = UIColor.white
+                button.setTitle(action.title, for: UIControlState())
                 buttonHolderView!.addSubview(button)
                 
-                if action.style == .Destructive {
-                    button.setTitleColor(UIColor.redColor(), forState: .Normal)
-                } else if action.style == .Selected {
-                    let imageView = UIImageView(image: UIImage(named: "checked", inBundle: bundle, compatibleWithTraitCollection: nil))
-                    imageView.frame = CGRect(x: CGRectGetWidth(subviewFrame) - 30, y: buttonHeight/2 - 6, width: 15, height: 12)
+                if action.style == .destructive {
+                    button.setTitleColor(UIColor.red, for: UIControlState())
+                } else if action.style == .selected {
+                    let imageView = UIImageView(image: UIImage(named: "checked", in: bundle, compatibleWith: nil))
+                    imageView.frame = CGRect(x: subviewFrame.width - 30, y: buttonHeight/2 - 6, width: 15, height: 12)
                     imageView.tag = tickImageViewTag
                     imageView.alpha = 0
                     button.addSubview(imageView)
                 }
                 
                 if index != 0 {
-                    let separator = UIView(frame: CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: CGRectGetWidth(subviewFrame), height: 0.5))
-                    separator.backgroundColor = UIColor.lightGrayColor().colorWithAlphaComponent(0.3)
+                    let separator = UIView(frame: CGRect(x: 0, y: CGFloat(index)*buttonHeight, width: subviewFrame.width, height: 0.5))
+                    separator.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
                     buttonHolderView!.addSubview(separator)
                 }
             }
@@ -237,20 +237,20 @@ public struct PeekViewAction {
         }
     }
     
-    func buttonPressed(sender: UIButton) {
+    func buttonPressed(_ sender: UIButton) {
         if let completionHandler = completionHandler {
             completionHandler(sender.tag)
         }
         
         if let imageView = sender.viewWithTag(tickImageViewTag) as? UIImageView {
             imageView.alpha = imageView.alpha == 1 ? 0 : 1
-        } else if let buttonHolderView = buttonHolderView, contentView = contentView {
+        } else if let buttonHolderView = buttonHolderView, let contentView = contentView {
             var buttonHolderViewFrame = buttonHolderView.frame
-            buttonHolderViewFrame.origin.y = CGRectGetMaxY(frame)
+            buttonHolderViewFrame.origin.y = frame.maxY
             
             var contentViewFrame = contentView.frame
-            contentViewFrame.origin.y = -CGRectGetHeight(contentViewFrame)
-            UIView.animateWithDuration(0.2, animations: { () -> Void in
+            contentViewFrame.origin.y = -contentViewFrame.height
+            UIView.animate(withDuration: 0.2, animations: { () -> Void in
                 buttonHolderView.frame = buttonHolderViewFrame
                 contentView.frame = contentViewFrame
                 }, completion: { completed in
@@ -264,9 +264,9 @@ public struct PeekViewAction {
     func dismissView() {
         if let contentView = contentView {
             if self.shouldToggleHidingStatusBar == true {
-                UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: .Fade)
+                UIApplication.shared.setStatusBarHidden(false, with: .fade)
             }
-            UIView.animateWithDuration(0.3, animations: { () -> Void in
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 contentView.alpha = 0
                 }, completion: { completion in
                     self.removeFromSuperview()
@@ -274,7 +274,7 @@ public struct PeekViewAction {
         }
     }
     
-    func updateContentViewFrame(frameY: CGFloat) {
+    func updateContentViewFrame(_ frameY: CGFloat) {
         if let contentView = contentView {
             var contentCenterPoint = contentView.center
             contentCenterPoint.y = frameY
@@ -283,32 +283,32 @@ public struct PeekViewAction {
             // move arrow along with content view
             if arrowImageView != nil {
                 var arrowCenterPoint = arrowImageView!.center
-                arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                arrowCenterPoint.y = contentView.frame.minY - 17
                 arrowImageView!.center = arrowCenterPoint
             }
             
             if let buttonHolderView = buttonHolderView {
-                if CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding*2 {
+                if contentView.frame.maxY < self.frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding*2 {
                     // if option buttons are visible entirely
                     var frame = buttonHolderView.frame
-                    frame.origin.y = CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    frame.origin.y = self.frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
                         self.arrowImageView?.alpha = 0
                     })
-                } else if CGRectGetMinY(buttonHolderView.frame) < CGRectGetMaxY(self.frame) && CGRectGetMaxY(contentView.frame) < CGRectGetMaxY(self.frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding {
+                } else if buttonHolderView.frame.minY < self.frame.maxY && contentView.frame.maxY < self.frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding {
                     // if option buttons are visible partially
                     var frame = buttonHolderView.frame
-                    frame.origin.y = CGRectGetMaxY(contentView.frame) + buttonVerticalPadding
+                    frame.origin.y = contentView.frame.maxY + buttonVerticalPadding
                     buttonHolderView.frame = frame
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         self.arrowImageView?.alpha = 0
                     })
                 } else {
                     // hide option buttons
                     var frame = buttonHolderView.frame
-                    frame.origin.y = CGRectGetMaxY(self.frame)
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    frame.origin.y = self.frame.maxY
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
                         self.arrowImageView?.alpha = 1
                     })
@@ -318,26 +318,26 @@ public struct PeekViewAction {
         }
     }
     
-    func contentViewPanned(gestureRecognizer: UIPanGestureRecognizer) {
+    func contentViewPanned(_ gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .Ended:
-            if let buttonHolderView = buttonHolderView, contentView = contentView {
-                if CGRectGetMinY(buttonHolderView.frame) <= CGRectGetMaxY(frame) - CGRectGetHeight(buttonHolderView.frame) - buttonVerticalPadding {
+        case .ended:
+            if let buttonHolderView = buttonHolderView, let contentView = contentView {
+                if buttonHolderView.frame.minY <= frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding {
                     var frame = contentView.frame
-                    frame.origin.y = CGRectGetMinY(buttonHolderView.frame) - CGRectGetHeight(contentView.frame) - buttonVerticalPadding
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    frame.origin.y = buttonHolderView.frame.minY - contentView.frame.height - buttonVerticalPadding
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         contentView.frame = frame
                     })
                 } else {
                     var frame = buttonHolderView.frame
-                    frame.origin.y = CGRectGetMaxY(self.frame)
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    frame.origin.y = self.frame.maxY
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         buttonHolderView.frame = frame
-                        contentView.center = CGPoint(x: CGRectGetWidth(self.frame)/2, y: CGRectGetHeight(self.frame)/2)
+                        contentView.center = CGPoint(x: self.frame.width/2, y: self.frame.height/2)
                         // move arrow along with content view
                         if self.arrowImageView != nil {
                             var arrowCenterPoint = self.arrowImageView!.center
-                            arrowCenterPoint.y = CGRectGetMinY(contentView.frame) - 17
+                            arrowCenterPoint.y = contentView.frame.minY - 17
                             self.arrowImageView!.center = arrowCenterPoint
                             self.arrowImageView!.alpha = 0
                         }
@@ -350,7 +350,7 @@ public struct PeekViewAction {
                 dismissView()
             }
         default:
-            updateContentViewFrame(gestureRecognizer.locationInView(self).y)
+            updateContentViewFrame(gestureRecognizer.location(in: self).y)
         }
         
     }

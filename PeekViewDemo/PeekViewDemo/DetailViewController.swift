@@ -24,8 +24,8 @@ class DetailViewController: UIViewController {
     }
     
     @available(iOS 9.0, *)
-    override func previewActionItems() -> [UIPreviewActionItem] {
-        let dummyAction = UIPreviewAction(title: "3D Touch is Awesome!", style: .Default, handler: { action, previewViewController in
+    override var previewActionItems : [UIPreviewActionItem] {
+        let dummyAction = UIPreviewAction(title: "3D Touch is Awesome!", style: .default, handler: { action, previewViewController in
             print("Action selected!")
         })
         
