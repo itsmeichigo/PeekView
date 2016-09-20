@@ -14,14 +14,16 @@ Pod::Spec.new do |s|
   s.author             = { "Huong Do" => "huongdt29@gmail.com" }
   s.social_media_url   = "http://twitter.com/itsmeichigo"
 
-  s.platform     = :ios, "8.0"
+  s.ios.deployment_target = "8.0"
 
   s.source       = { :git => "https://github.com/itsmeichigo/PeekView.git", :tag => "1.1" }
 
   s.source_files  = "Source"
 
   s.resources = "Source/Assets/*.png"
-  s.ios.resource_bundle = { 'PeekView' => 'Pod/Assets/*.png' }
+  #s.resource_bundles = { "PeekView" => ["Pod/Assets/*.png"] }
 
+  s.requires_arc = true
+  s.pod_target_xcconfig = { "SWIFT_VERSION" => "3.0" }
 
 end
