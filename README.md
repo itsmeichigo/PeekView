@@ -18,7 +18,9 @@ Things that need improving
 
 ## Requirements
 
-[PeekView](#) supports devices without 3D touch capibility running iOS 8 and later.
+- iOS 8 and later
+- Swift 3 & xCode 8
+- If you wish to work with Swift 2.3, check out branch `swift23`
 
 ## Getting Started
 
