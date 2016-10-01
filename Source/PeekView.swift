@@ -13,6 +13,7 @@ let screenHeight = UIScreen.main.bounds.size.height
 let peekViewTag = 1929
 let tickImageViewTag = 1930
 let buttonVerticalPadding = CGFloat(15)
+var fromTouchToContentCenter = CGFloat(0)
 
 @objc public enum PeekViewActionStyle : Int {
     case `default`
@@ -101,11 +102,26 @@ public struct PeekViewAction {
                 parentController.addChildViewController(contentController)
                 contentController.didMove(toParentViewController: parentController)
                 
+                // DuyNT: Calculate distance from touch location to vertical center point of contentView, and when the touch location moves as the user swiping his hand, vertical center point of contentView will be recalculated, resulting in a nicer visual which contentView center does not necessary be aligned with user's finger as in original solution.
+                if let view = window.viewWithTag(peekViewTag) as? PeekView {
+                    let pointOfHand = gesture.location(in: view.superview).y
+                    fromTouchToContentCenter = pointOfHand - screenHeight / 2
+                }
+                
             case .changed:
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
-                    view.updateContentViewFrame(gesture.location(in: view.superview!).y)
+                    
+                    // DuyNT: Here we use the number calculated before to get 'better' center position of contentView
+                    let pointOfHand = gesture.location(in: view.superview!).y
+                    var centerOfContent = CGFloat(0)
+                    
+                    centerOfContent = pointOfHand - fromTouchToContentCenter
+                    
+                    view.updateContentViewFrame(centerOfContent)
                 }
             case .ended:
+                fromTouchToContentCenter = CGFloat(0)
+                
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
                     if let buttonHolderView = view.buttonHolderView, let contentView = view.contentView {
                         if buttonHolderView.frame.minY <= view.frame.maxY - buttonHolderView.frame.height - buttonVerticalPadding {
@@ -136,6 +152,7 @@ public struct PeekViewAction {
                     }
                 }
             default:
+                fromTouchToContentCenter = CGFloat(0)
                 break
             }
             
@@ -350,7 +367,11 @@ public struct PeekViewAction {
                 dismissView()
             }
         default:
-            updateContentViewFrame(gestureRecognizer.location(in: self).y)
+            let pointOfHand = gestureRecognizer.location(in: self).y
+            var centerOfContent = CGFloat(0)
+            centerOfContent = pointOfHand - fromTouchToContentCenter
+            
+            updateContentViewFrame(centerOfContent)
         }
         
     }
