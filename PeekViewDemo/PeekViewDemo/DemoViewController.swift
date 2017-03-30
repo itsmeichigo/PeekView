@@ -18,22 +18,22 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        forceTouchAvailable = false
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if #available(iOS 9.0, *) {
-            if traitCollection.forceTouchCapability == .available {
-                forceTouchAvailable = true
-                registerForPreviewing(with: self, sourceView: view)
-            } else {
-                forceTouchAvailable = false
-            }
-        } else {
-            forceTouchAvailable = false
-        }
-    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//        if #available(iOS 9.0, *) {
+//            if traitCollection.forceTouchCapability == .available {
+//                forceTouchAvailable = true
+//                registerForPreviewing(with: self, sourceView: view)
+//            } else {
+//                forceTouchAvailable = false
+//            }
+//        } else {
+//            forceTouchAvailable = false
+//        }
+//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showDetailSegue && sender is UICollectionViewCell {
@@ -117,7 +117,7 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
                 PeekViewAction(title: "Option 1", style: .destructive),
                 PeekViewAction(title: "Option 2", style: .default),
                 PeekViewAction(title: "Option 3", style: .selected) ]
-            PeekView().viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, withOptions: options, completionHandler: { optionIndex in
+            PeekView().viewForController(parentViewController: self, contentViewController: controller, expectedContentViewFrame: frame, fromGesture: gestureRecognizer, shouldHideStatusBar: true, menuOptions: options, completionHandler: { optionIndex in
                     switch optionIndex {
                     case 0:
                         print("Option 1 selected")
@@ -128,7 +128,9 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
                     default:
                         break
                     }
-                })
+            }, dismissHandler: {
+                print("Peekview dismissed!")
+            })
         }
     }
 }

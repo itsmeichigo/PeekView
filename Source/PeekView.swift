@@ -37,6 +37,7 @@ public struct PeekViewAction {
     var contentView: UIView?
     var buttonHolderView: UIView?
     var completionHandler: ((Int) -> Void)?
+    var dismissHandler: (()->Void)?
     
     var arrowImageView: UIImageView?
     
@@ -47,13 +48,14 @@ public struct PeekViewAction {
      *  (More delicate solution to be found later :[ )
      */
     @objc open class func viewForController(
-        parentViewController parentController: UIViewController,
-        contentViewController contentController: UIViewController,
-        expectedContentViewFrame frame: CGRect,
-        fromGesture gesture: UILongPressGestureRecognizer,
-        shouldHideStatusBar flag: Bool,
-        withOptions menuOptions: NSArray?,
-        completionHandler handler: ((Int) -> Void)?) {
+        parentViewController: UIViewController,
+        contentViewController: UIViewController,
+        expectedContentViewFrame: CGRect,
+        fromGesture: UILongPressGestureRecognizer,
+        shouldHideStatusBar: Bool,
+        menuOptions: NSArray?,
+        completionHandler: ((Int) -> Void)?,
+        dismissHandler: (()->Void)?) {
             
             var options: [PeekViewAction]? = nil
             if let menuOptions = menuOptions {
@@ -69,42 +71,49 @@ public struct PeekViewAction {
             }
             
             PeekView().viewForController(
-                parentViewController: parentController,
-                contentViewController: contentController,
-                expectedContentViewFrame: frame,
-                fromGesture: gesture,
-                shouldHideStatusBar: flag,
-                withOptions: options,
-                completionHandler: handler)
+                parentViewController: parentViewController,
+                contentViewController: contentViewController,
+                expectedContentViewFrame: expectedContentViewFrame,
+                fromGesture: fromGesture,
+                shouldHideStatusBar: shouldHideStatusBar,
+                menuOptions: options,
+                completionHandler: completionHandler,
+                dismissHandler: dismissHandler)
     }
     
     /**
      *  
      */
     open func viewForController(
-        parentViewController parentController: UIViewController,
-        contentViewController contentController: UIViewController,
-        expectedContentViewFrame frame: CGRect,
-        fromGesture gesture: UILongPressGestureRecognizer,
-        shouldHideStatusBar flag: Bool,
-        withOptions menuOptions: [PeekViewAction]?=nil,
-        completionHandler handler: ((Int) -> Void)?=nil) {
+        parentViewController: UIViewController,
+        contentViewController: UIViewController,
+        expectedContentViewFrame: CGRect,
+        fromGesture: UILongPressGestureRecognizer,
+        shouldHideStatusBar: Bool,
+        menuOptions: [PeekViewAction]?=nil,
+        completionHandler: ((Int) -> Void)?=nil,
+        dismissHandler: (()->Void)?=nil) {
             
             let window = UIApplication.shared.keyWindow!
             
-            switch gesture.state {
+            switch fromGesture.state {
             case .began:
                 let peekView = PeekView(frame: window.frame)
-                peekView.configureView(contentController, subviewFrame: frame, shouldHideStatusBar: flag, options: menuOptions, completionHandler: handler)
+                peekView.configureView(viewController: contentViewController,
+                                       subviewFrame: expectedContentViewFrame,
+                                       shouldHideStatusBar: shouldHideStatusBar,
+                                       options: menuOptions,
+                                       completionHandler: completionHandler,
+                                       dismissHandler: dismissHandler)
                 peekView.tag = peekViewTag
                 window.addSubview(peekView)
                 
-                parentController.addChildViewController(contentController)
-                contentController.didMove(toParentViewController: parentController)
+                parentViewController.addChildViewController(contentViewController)
+                contentViewController.didMove(toParentViewController: parentViewController)
                 
                 // DuyNT: Calculate distance from touch location to vertical center point of contentView, and when the touch location moves as the user swiping his hand, vertical center point of contentView will be recalculated, resulting in a nicer visual which contentView center does not necessary be aligned with user's finger as in original solution.
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
-                    let pointOfHand = gesture.location(in: view.superview).y
+                    let pointOfHand = fromGesture.location(in: view.superview).y
                     fromTouchToContentCenter = pointOfHand - screenHeight / 2
                 }
                 
@@ -112,7 +121,7 @@ public struct PeekViewAction {
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
                     
                     // DuyNT: Here we use the number calculated before to get 'better' center position of contentView
-                    let pointOfHand = gesture.location(in: view.superview!).y
+                    let pointOfHand = fromGesture.location(in: view.superview!).y
                     var centerOfContent = CGFloat(0)
                     
                     centerOfContent = pointOfHand - fromTouchToContentCenter
@@ -158,10 +167,11 @@ public struct PeekViewAction {
             
     }
     
-    func configureView(_ viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [PeekViewAction]?=nil, completionHandler: ((Int) -> Void)?=nil) {
+    func configureView(viewController: UIViewController, subviewFrame: CGRect, shouldHideStatusBar: Bool, options: [PeekViewAction]?=nil, completionHandler: ((Int) -> Void)?=nil, dismissHandler: (()->Void)?=nil) {
         
         self.shouldToggleHidingStatusBar = shouldHideStatusBar
         self.completionHandler = completionHandler
+        self.dismissHandler = dismissHandler
         
         if shouldToggleHidingStatusBar == true {
             UIApplication.shared.isStatusBarHidden = true
@@ -286,6 +296,7 @@ public struct PeekViewAction {
             UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 contentView.alpha = 0
                 }, completion: { completion in
+                    self.dismissHandler?()
                     self.removeFromSuperview()
             })
         }
