@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "PeekView"
-  s.version      = "1.1.1"
+  s.version      = "1.1.2"
   s.summary      = "PeekView supports peek, pop and preview actions for iOS devices without 3D Touch capibility"
 
   s.description  = "When implementing peek, pop and preview actions with 3D Touch, you may want to support such features for users accessing your app from older devices that don't provide 3D Touch capibility. PeekView hence can be used as an alternative in such case."
