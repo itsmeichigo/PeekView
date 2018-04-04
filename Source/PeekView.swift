@@ -264,7 +264,7 @@ public struct PeekViewAction {
         }
     }
     
-    func buttonPressed(_ sender: UIButton) {
+    @objc func buttonPressed(_ sender: UIButton) {
         if let completionHandler = completionHandler {
             completionHandler(sender.tag)
         }
@@ -288,7 +288,7 @@ public struct PeekViewAction {
         }
     }
     
-    func dismissView() {
+    @objc func dismissView() {
         if let contentView = contentView {
             if self.shouldToggleHidingStatusBar == true {
                 UIApplication.shared.setStatusBarHidden(false, with: .fade)
@@ -346,7 +346,7 @@ public struct PeekViewAction {
         }
     }
     
-    func contentViewPanned(_ gestureRecognizer: UIPanGestureRecognizer) {
+    @objc func contentViewPanned(_ gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .ended:
             if let buttonHolderView = buttonHolderView, let contentView = contentView {

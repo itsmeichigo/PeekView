@@ -103,7 +103,7 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
     }
     
-    func longPressCell(_ gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc func longPressCell(_ gestureRecognizer: UILongPressGestureRecognizer) {
         
         if let cell = gestureRecognizer.view as? UICollectionViewCell, let indexPath = collectionView.indexPath(for: cell) {
             let imageName = imageNames[(indexPath as NSIndexPath).item]
