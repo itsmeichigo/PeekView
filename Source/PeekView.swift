@@ -108,8 +108,8 @@ public struct PeekViewAction {
                 peekView.tag = peekViewTag
                 window.addSubview(peekView)
                 
-                parentViewController.addChildViewController(contentViewController)
-                contentViewController.didMove(toParentViewController: parentViewController)
+                parentViewController.addChild(contentViewController)
+                contentViewController.didMove(toParent: parentViewController)
                 
                 // DuyNT: Calculate distance from touch location to vertical center point of contentView, and when the touch location moves as the user swiping his hand, vertical center point of contentView will be recalculated, resulting in a nicer visual which contentView center does not necessary be aligned with user's finger as in original solution.
                 if let view = window.viewWithTag(peekViewTag) as? PeekView {
@@ -241,11 +241,11 @@ public struct PeekViewAction {
                 button.tag = index
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
                 button.backgroundColor = UIColor.white
-                button.setTitle(action.title, for: UIControlState())
+                button.setTitle(action.title, for: UIControl.State())
                 buttonHolderView!.addSubview(button)
                 
                 if action.style == .destructive {
-                    button.setTitleColor(UIColor.red, for: UIControlState())
+                    button.setTitleColor(UIColor.red, for: UIControl.State())
                 } else if action.style == .selected {
                     let imageView = UIImageView(image: UIImage(named: "checked", in: bundle, compatibleWith: nil))
                     imageView.frame = CGRect(x: subviewFrame.width - 30, y: buttonHeight/2 - 6, width: 15, height: 12)
