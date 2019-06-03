@@ -21,20 +21,6 @@ class DemoViewController: UIViewController, UICollectionViewDataSource, UICollec
         forceTouchAvailable = false
     }
     
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        super.traitCollectionDidChange(previousTraitCollection)
-//        if #available(iOS 9.0, *) {
-//            if traitCollection.forceTouchCapability == .available {
-//                forceTouchAvailable = true
-//                registerForPreviewing(with: self, sourceView: view)
-//            } else {
-//                forceTouchAvailable = false
-//            }
-//        } else {
-//            forceTouchAvailable = false
-//        }
-//    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showDetailSegue && sender is UICollectionViewCell {
             if let indexPath = collectionView.indexPath(for: sender as! UICollectionViewCell) {
