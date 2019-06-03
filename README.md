@@ -19,7 +19,7 @@ Things that need improving
 ## Requirements
 
 - iOS 8 and later
-- Swift 5 & xCode 10.2
+- Swift 5 & Xcode 10.2
 - If you wish to work with Swift 2.3, check out branch `swift23`
 
 ## Getting Started
